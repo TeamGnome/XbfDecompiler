@@ -1,12 +1,7 @@
 ﻿using System.IO;
 
-namespace LibXbf.Records
+namespace LibXbf.Records.Types
 {
-    public interface IXbfType<T>
-    {
-        T ReadValue(BinaryReader br);
-    }
-
     public class XbfString : IXbfType<string>
     {
         public string ReadValue(BinaryReader br)
@@ -15,14 +10,6 @@ namespace LibXbf.Records
             char[] val = br.ReadChars((int)sizeOfVal);
 
             return new string(val);
-        }
-    }
-
-    public class XbfUInt32 : IXbfType<uint>
-    {
-        public uint ReadValue(BinaryReader br)
-        {
-            return br.ReadUInt32();
         }
     }
 }

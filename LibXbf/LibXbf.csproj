@@ -42,11 +42,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Records\PropertyEntry.cs" />
-    <Compile Include="Records\TypeEntry.cs" />
-    <Compile Include="Records\TypeNamespaceEntry.cs" />
-    <Compile Include="Records\IXbfType.cs" />
-    <Compile Include="Records\AssemblyEntry.cs" />
+    <Compile Include="Records\Types\XbfTypeNamespaceEntry.cs" />
+    <Compile Include="Records\Types\XbfTypeEntry.cs" />
+    <Compile Include="Records\Types\XbfPropertyEntry.cs" />
+    <Compile Include="Records\Types\PropertyEntry.cs" />
+    <Compile Include="Records\Types\TypeEntry.cs" />
+    <Compile Include="Records\Types\TypeNamespaceEntry.cs" />
+    <Compile Include="Records\Types\XbfString.cs" />
+    <Compile Include="Records\Types\IXbfType.cs" />
+    <Compile Include="Records\Types\XbfAssemblyEntry.cs" />
+    <Compile Include="Records\Types\AssemblyEntry.cs" />
     <Compile Include="Records\XbfTable.cs" />
     <Compile Include="Records\XbfHeader.cs" />
     <Compile Include="XbfReader.cs" />

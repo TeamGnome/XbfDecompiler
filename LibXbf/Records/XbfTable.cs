@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using LibXbf.Records.Types;
+using System.Collections.Generic;
 using System.IO;
 
 namespace LibXbf.Records

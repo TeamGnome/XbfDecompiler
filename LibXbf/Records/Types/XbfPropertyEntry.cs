@@ -1,15 +1,8 @@
 ﻿using System;
 using System.IO;
 
-namespace LibXbf.Records
+namespace LibXbf.Records.Types
 {
-    public struct PropertyEntry
-    {
-        public PropertyFlags Flags { get; set; }
-        public uint TypeId { get; set; }
-        public uint StringId { get; set; }
-    }
-
     public class XbfPropertyEntry : IXbfType<PropertyEntry>
     {
         public PropertyEntry ReadValue(BinaryReader br)
@@ -20,14 +13,5 @@ namespace LibXbf.Records
             te.StringId = br.ReadUInt32();
             return te;
         }
-    }
-
-    [Flags]
-    public enum PropertyFlags
-    {
-        None = 0,
-        IsXmlProperty = 1,
-        IsMarkupDirective = 2,
-        IsImplicitProperty = 4
     }
 }

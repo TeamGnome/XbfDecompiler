@@ -1,13 +1,7 @@
 ﻿using System.IO;
 
-namespace LibXbf.Records
+namespace LibXbf.Records.Types
 {
-    public struct TypeNamespaceEntry
-    {
-        public uint AssemblyId { get; set; }
-        public uint StringId { get; set; }
-    }
-
     public class XbfTypeNamespaceEntry : IXbfType<TypeNamespaceEntry>
     {
         public TypeNamespaceEntry ReadValue(BinaryReader br)

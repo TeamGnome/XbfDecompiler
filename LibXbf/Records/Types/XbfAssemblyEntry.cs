@@ -1,13 +1,7 @@
 ﻿using System.IO;
 
-namespace LibXbf.Records
+namespace LibXbf.Records.Types
 {
-    public struct AssemblyEntry
-    {
-        public AssemblyEntryType ProviderKind { get; set; }
-        public uint StringId { get; set; }
-    }
-
     public class XbfAssemblyEntry : IXbfType<AssemblyEntry>
     {
         public AssemblyEntry ReadValue(BinaryReader br)
@@ -17,15 +11,5 @@ namespace LibXbf.Records
             ae.StringId = br.ReadUInt32();
             return ae;
         }
-    }
-
-    public enum AssemblyEntryType
-    {
-        Unknown = 0,
-        Native = 1,
-        Managed = 2,
-        System = 3,
-        Parser = 4,
-        Alternate = 5
     }
 }

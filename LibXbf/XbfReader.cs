@@ -1,4 +1,5 @@
 ﻿using LibXbf.Records;
+using LibXbf.Records.Types;
 using System.IO;
 using System.Text;
 
