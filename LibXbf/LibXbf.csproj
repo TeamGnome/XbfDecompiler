@@ -42,6 +42,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Records\Nodes\XbfLineInfo.cs" />
+    <Compile Include="Records\Nodes\XbfNamespace.cs" />
+    <Compile Include="Records\Nodes\XbfNode.cs" />
+    <Compile Include="Records\Nodes\XbfNodeType.cs" />
+    <Compile Include="Records\Nodes\XbfObject.cs" />
+    <Compile Include="Records\Nodes\XbfProperty.cs" />
+    <Compile Include="Records\Nodes\XbfText.cs" />
+    <Compile Include="Records\Nodes\XbfValue.cs" />
+    <Compile Include="Records\Nodes\XbfValueType.cs" />
     <Compile Include="Records\Types\XbfTypeNamespaceEntry.cs" />
     <Compile Include="Records\Types\XbfTypeEntry.cs" />
     <Compile Include="Records\Types\XbfPropertyEntry.cs" />
