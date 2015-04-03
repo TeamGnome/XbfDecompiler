@@ -5,13 +5,24 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XbfDecompiler"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
+        Title="XBF Decompiler" Height="480" Width="800" Loaded="Window_Loaded">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="38" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
-        <TreeView x:Name="xbfTree">
+        <ToolBarPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+            <ToolBar>
+                <Button Click="openFile">
+                    <Label>_Open</Label>
+                </Button>
+            </ToolBar>
+        </ToolBarPanel>
+        <TreeView x:Name="xbfTree" Grid.Column="0" Grid.Row="1">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
                     <TextBlock Text="{Binding Display}" />
