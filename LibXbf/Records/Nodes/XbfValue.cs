@@ -12,7 +12,7 @@ namespace LibXbf.Records.Nodes
         public XbfValueType Type { get; set; }
         public string Value { get; set; }
 
-        public XbfValue(BinaryReader br) : base(br)
+        public XbfValue(BinaryReader br) : base(null)
         {
             Type = (XbfValueType)br.ReadByte();
 

@@ -16,8 +16,18 @@ namespace LibXbf.Records.Nodes
 
         public XbfNode(BinaryReader br)
         {
-            Id = br.ReadUInt32();
-            Flags = br.ReadUInt32();
+            if (br == null)
+            {
+                // custom node format - as of today, currently only XbfValue
+                Id = 0;
+                Flags = 0;
+            }
+            else
+            {
+                // standard node
+                Id = br.ReadUInt32();
+                Flags = br.ReadUInt32();
+            }
         }
     }
 }
