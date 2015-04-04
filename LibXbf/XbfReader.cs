@@ -1,6 +1,7 @@
 ﻿using LibXbf.Records;
 using LibXbf.Records.Nodes;
 using LibXbf.Records.Types;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -9,6 +10,7 @@ namespace LibXbf
 {
     public class XbfFile
     {
+        public Version FileVersion { get; set; }
         public XbfHeader Header { get; set; }
         public XbfTable<string, XbfString> StringTable { get; set; }
         public XbfTable<AssemblyEntry, XbfAssemblyEntry> AssemblyTable { get; set; }
@@ -29,14 +31,15 @@ namespace LibXbf
             {
                 // read the file header
                 Header = new XbfHeader(br);
+                FileVersion = new Version((int)Header.MajorFileVersion, (int)Header.MinorFileVersion);
 
                 //read in the tables
-                StringTable = new XbfTable<string, XbfString>(br);
-                AssemblyTable = new XbfTable<AssemblyEntry, XbfAssemblyEntry>(br);
-                TypeNamespaceTable = new XbfTable<TypeNamespaceEntry, XbfTypeNamespaceEntry>(br);
-                TypeTable = new XbfTable<TypeEntry, XbfTypeEntry>(br);
-                PropertyTable = new XbfTable<PropertyEntry, XbfPropertyEntry>(br);
-                XmlNamespaceTable = new XbfTable<uint, XbfUInt32>(br);
+                StringTable = new XbfTable<string, XbfString>(br, FileVersion);
+                AssemblyTable = new XbfTable<AssemblyEntry, XbfAssemblyEntry>(br, FileVersion);
+                TypeNamespaceTable = new XbfTable<TypeNamespaceEntry, XbfTypeNamespaceEntry>(br, FileVersion);
+                TypeTable = new XbfTable<TypeEntry, XbfTypeEntry>(br, FileVersion);
+                PropertyTable = new XbfTable<PropertyEntry, XbfPropertyEntry>(br, FileVersion);
+                XmlNamespaceTable = new XbfTable<uint, XbfUInt32>(br, FileVersion);
 
                 // read in the nodes
                 ReadNodes(br);

@@ -51,6 +51,7 @@
     <Compile Include="Records\Nodes\XbfText.cs" />
     <Compile Include="Records\Nodes\XbfValue.cs" />
     <Compile Include="Records\Nodes\XbfValueType.cs" />
+    <Compile Include="Records\Types\XbfUInt32.cs" />
     <Compile Include="Records\Types\XbfTypeNamespaceEntry.cs" />
     <Compile Include="Records\Types\XbfTypeEntry.cs" />
     <Compile Include="Records\Types\XbfPropertyEntry.cs" />

@@ -1,4 +1,5 @@
 ﻿using LibXbf.Records.Types;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -9,7 +10,7 @@ namespace LibXbf.Records
         public uint Size { get; set; }
         public T[] Values { get; set; }
 
-        public XbfTable(BinaryReader br)
+        public XbfTable(BinaryReader br, Version fv)
         {
             Size = br.ReadUInt32();
 
@@ -17,7 +18,7 @@ namespace LibXbf.Records
 
             for (int i = 0; i < Size; i++)
             {
-                _values.Insert(i, new C().ReadValue(br));
+                _values.Insert(i, new C().ReadValue(br, fv));
             }
 
             Values = _values.ToArray();

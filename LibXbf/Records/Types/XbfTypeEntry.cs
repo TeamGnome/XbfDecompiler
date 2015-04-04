@@ -5,7 +5,7 @@ namespace LibXbf.Records.Types
 {
     public class XbfTypeEntry : IXbfType<TypeEntry>
     {
-        public TypeEntry ReadValue(BinaryReader br)
+        public TypeEntry ReadValue(BinaryReader br, Version fv)
         {
             TypeEntry te = new TypeEntry();
             te.Flags = (TypeFlags)br.ReadUInt32();
