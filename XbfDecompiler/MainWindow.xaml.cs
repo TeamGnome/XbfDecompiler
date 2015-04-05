@@ -16,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace XbfDecompiler
 {
@@ -37,8 +38,40 @@ namespace XbfDecompiler
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private void openFile(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "XAML Binary Files|*.xbf";
+            ofd.CheckFileExists = true;
+            ofd.AddExtension = true;
+
+            bool? result = ofd.ShowDialog();
+            if (result.HasValue && result.Value)
+            {
+                currentFile = new XbfFile(ofd.FileName);
+
+                List<XbfTreeItem> source = new List<XbfTreeItem>();
+                source.Add(DumpXbfObject(currentFile.RootNode));
+                xbfTree.ItemsSource = source;
+
+                XElement xe = DumpXbfObjectToXml(currentFile.RootNode);
+                xbfXml.Text = xe.ToString();
+            }
+        }
+
+        private XElement DumpXbfObjectToXml(XbfObject xo)
+        {
+            var obj = currentFile.TypeTable.Values[xo.Id];
+            string disp = currentFile.StringTable.Values[obj.StringId];
+
+            XElement xe = new XElement(disp);
+
+            var properties = from x in xo.Properties
+                             where x is XbfProperty
+                             select DumpXbfPropertyToXml(x as XbfProperty);
+            xe.Add(properties);
+
+            return xe;
         }
 
         private XbfTreeItem DumpXbfObject(XbfObject xo)
@@ -52,6 +85,33 @@ namespace XbfDecompiler
                 Children = from prop in xo.Properties
                            select DumpXbfProperty(prop)
             };
+        }
+
+        private XElement DumpXbfPropertyToXml(XbfProperty xp)
+        {
+            var property = currentFile.PropertyTable.Values[xp.Id];
+            string disp = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ?
+                            string.Format("{0}", currentFile.StringTable.Values[property.StringId]) :
+                            currentFile.StringTable.Values[property.StringId];
+
+            XElement xe = new XElement(disp);
+
+            var objects = from x in xp.Values
+                          where x is XbfObject
+                          select DumpXbfObjectToXml(x as XbfObject);
+            xe.Add(objects);
+
+            var texts = from x in xp.Values
+                          where x is XbfText
+                          select DumpXbfTextToXml(x as XbfText);
+            xe.Add(texts);
+
+            var values = from x in xp.Values
+                        where x is XbfValue
+                        select DumpXbfValueToXml(x as XbfValue);
+            xe.Add(values);
+
+            return xe;
         }
 
         private XbfTreeItem DumpXbfProperty(XbfProperty xp)
@@ -69,6 +129,13 @@ namespace XbfDecompiler
             };
         }
 
+        private string DumpXbfTextToXml(XbfText xt)
+        {
+            string disp = currentFile.StringTable.Values[xt.Id];
+
+            return disp;
+        }
+
         private XbfTreeItem DumpXbfText(XbfText xt)
         {
             string disp = currentFile.StringTable.Values[xt.Id];
@@ -78,6 +145,11 @@ namespace XbfDecompiler
                 Display = disp,
                 Children = null
             };
+        }
+
+        private string DumpXbfValueToXml(XbfValue xv)
+        {
+            return string.Format("{0}: {1}", xv.Type, xv.Value);
         }
 
         private XbfTreeItem DumpXbfValue(XbfValue xv)
@@ -106,24 +178,6 @@ namespace XbfDecompiler
             else
             {
                 return null;
-            }
-        }
-
-        private void openFile(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-            ofd.Filter = "XAML Binary Files|*.xbf";
-            ofd.CheckFileExists = true;
-            ofd.AddExtension = true;
-
-            bool? result = ofd.ShowDialog();
-            if (result.HasValue && result.Value)
-            {
-                currentFile = new XbfFile(ofd.FileName);
-
-                List<XbfTreeItem> source = new List<XbfTreeItem>();
-                source.Add(DumpXbfObject(currentFile.RootNode));
-                xbfTree.ItemsSource = source;
             }
         }
     }

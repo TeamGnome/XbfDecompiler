@@ -5,23 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:XbfDecompiler"
         mc:Ignorable="d"
-        Title="XBF Decompiler" Height="480" Width="800" Loaded="Window_Loaded">
+        Title="XBF Decompiler" Height="480" Width="800">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="38" />
+            <RowDefinition Height="36" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="2*" />
         </Grid.ColumnDefinitions>
-        <ToolBarPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
-            <ToolBar>
-                <Button Click="openFile">
-                    <Label>_Open</Label>
-                </Button>
-            </ToolBar>
-        </ToolBarPanel>
+        <StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="2">
+            <Button Click="openFile" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}">
+                <Label>_Open</Label>
+            </Button>
+        </StackPanel>
         <TreeView x:Name="xbfTree" Grid.Column="0" Grid.Row="1">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding Children}">
@@ -29,5 +27,6 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
+        <TextBox x:Name="xbfXml" Grid.Column="1" Grid.Row="1" IsReadOnly="True" />
     </Grid>
 </Window>
