@@ -87,31 +87,38 @@ namespace XbfDecompiler
             };
         }
 
-        private XElement DumpXbfPropertyToXml(XbfProperty xp)
+        private XObject DumpXbfPropertyToXml(XbfProperty xp)
         {
             var property = currentFile.PropertyTable.Values[xp.Id];
-            string disp = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ?
-                            string.Format("{0}", currentFile.StringTable.Values[property.StringId]) :
+            XName disp = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ?
+                            XName.Get(string.Format("{0}", currentFile.StringTable.Values[property.StringId])) :
                             currentFile.StringTable.Values[property.StringId];
-
-            XElement xe = new XElement(disp);
 
             var objects = from x in xp.Values
                           where x is XbfObject
                           select DumpXbfObjectToXml(x as XbfObject);
-            xe.Add(objects);
 
-            var texts = from x in xp.Values
-                          where x is XbfText
-                          select DumpXbfTextToXml(x as XbfText);
-            xe.Add(texts);
-
-            var values = from x in xp.Values
-                        where x is XbfValue
-                        select DumpXbfValueToXml(x as XbfValue);
-            xe.Add(values);
-
-            return xe;
+            if(objects.Count() > 0)
+            {
+                XElement xe = new XElement(disp);
+                xe.Add(objects);
+                return xe;
+            }
+            else
+            {
+                XAttribute xa = new XAttribute(disp, "");
+                var xText = xp.Values.FirstOrDefault(x => x is XbfText);
+                if (xText != null)
+                {
+                    xa.SetValue(DumpXbfTextToXml(xText as XbfText));
+                }
+                var xVal = xp.Values.FirstOrDefault(x => x is XbfValue);
+                if (xVal != null)
+                {
+                    xa.SetValue(DumpXbfValueToXml(xVal as XbfValue));
+                }
+                return xa;
+            }
         }
 
         private XbfTreeItem DumpXbfProperty(XbfProperty xp)
@@ -149,7 +156,7 @@ namespace XbfDecompiler
 
         private string DumpXbfValueToXml(XbfValue xv)
         {
-            return string.Format("{0}: {1}", xv.Type, xv.Value);
+            return xv.Value;
         }
 
         private XbfTreeItem DumpXbfValue(XbfValue xv)
