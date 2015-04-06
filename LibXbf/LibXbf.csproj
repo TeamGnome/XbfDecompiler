@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Output\IXbfOutput.cs" />
+    <Compile Include="Output\XamlOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Records\Nodes\XbfLineInfo.cs" />
     <Compile Include="Records\Nodes\XbfNamespace.cs" />

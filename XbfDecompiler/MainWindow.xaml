@@ -27,6 +27,6 @@
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
         </TreeView>
-        <TextBox x:Name="xbfXml" Grid.Column="1" Grid.Row="1" IsReadOnly="True" />
+        <TextBox x:Name="xbfXml" Grid.Column="1" Grid.Row="1" IsReadOnly="True" TextWrapping="WrapWithOverflow" />
     </Grid>
 </Window>
