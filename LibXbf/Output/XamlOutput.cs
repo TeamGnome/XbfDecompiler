@@ -15,11 +15,10 @@ namespace LibXbf.Output
             CurrentFile = file;
 
             List<XAttribute> nsDeclarations = new List<XAttribute>();
-            foreach(var ns in CurrentFile.XmlNamespaceTable.Values)
+            foreach(var ns in CurrentFile.Namespaces)
             {
-                var xns = XNamespace.Get(CurrentFile.StringTable.Values[ns]);
-                string shortName = GetXmlnsAttributeNameForUrl(xns.NamespaceName);
-                nsDeclarations.Add(new XAttribute(string.IsNullOrEmpty(shortName) ? "xmlns" : XNamespace.Xmlns + shortName, xns.NamespaceName));
+                var xns = CurrentFile.StringTable.Values[CurrentFile.XmlNamespaceTable.Values[ns.Id]];
+                nsDeclarations.Add(new XAttribute(string.IsNullOrEmpty(ns.Namespace) ? "xmlns" : XNamespace.Xmlns + ns.Namespace, xns));
             }
 
             var rootObj = CurrentFile.TypeTable.Values[CurrentFile.RootNode.Id];
@@ -94,33 +93,6 @@ namespace LibXbf.Output
         private string DumpXbfValueToXml(XbfValue xv)
         {
             return xv.Value;
-        }
-
-        private string GetXmlnsAttributeNameForUrl(string nsUrl)
-        {
-            string nsUrlLower = nsUrl.ToLower();
-            switch(nsUrlLower)
-            {
-                case "http://schemas.microsoft.com/winfx/2006/xaml/presentation":
-                    return "";
-                case "http://schemas.microsoft.com/winfx/2006/xaml":
-                    return "x";
-                case "http://schemas.microsoft.com/expression/blend/2008":
-                    return "d";
-                case "http://schemas.openxmlformats.org/markup-compatibility/2006":
-                    return "mc";
-                default:
-                    {
-                        if(nsUrlLower.StartsWith("using:") || nsUrlLower.StartsWith("clr-namespace:"))
-                        {
-                            return nsUrlLower.Substring(nsUrlLower.LastIndexOf('.') + 1);
-                        }
-                        else
-                        {
-                            return "xml" + nsUrlLower.GetHashCode().ToString("X8").ToLower();
-                        }
-                    }
-            }
         }
     }
 }
