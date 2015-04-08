@@ -2,6 +2,7 @@
 using LibXbf.Records.Types;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
 namespace LibXbf.Output
@@ -22,8 +23,8 @@ namespace LibXbf.Output
             }
 
             var rootObj = CurrentFile.TypeTable.Values[CurrentFile.RootNode.Id];
-            string rootName = CurrentFile.StringTable.Values[rootObj.StringId];
-            var rootElement = new XElement(XName.Get(rootName, "http://schemas.microsoft.com/winfx/2006/xaml/presentation"));
+            XName rootName = GetXNameForObject(CurrentFile.StringTable.Values[rootObj.StringId], CurrentFile.StringTable.Values[CurrentFile.TypeNamespaceTable.Values[rootObj.NamespaceId].StringId]);
+            var rootElement = new XElement(rootName);
             rootElement.Add(nsDeclarations.ToArray());
 
             var properties = from x in CurrentFile.RootNode.Properties
@@ -37,7 +38,7 @@ namespace LibXbf.Output
         private XElement DumpXbfObjectToXml(XbfObject xo)
         {
             var obj = CurrentFile.TypeTable.Values[xo.Id];
-            string disp = CurrentFile.StringTable.Values[obj.StringId];
+            XName disp = GetXNameForObject(CurrentFile.StringTable.Values[obj.StringId], CurrentFile.StringTable.Values[CurrentFile.TypeNamespaceTable.Values[obj.NamespaceId].StringId]);
 
             XElement xe = new XElement(disp);
 
@@ -49,12 +50,10 @@ namespace LibXbf.Output
             return xe;
         }
 
-        private XObject DumpXbfPropertyToXml(XbfProperty xp)
+        private XObject[] DumpXbfPropertyToXml(XbfProperty xp)
         {
             var property = CurrentFile.PropertyTable.Values[xp.Id];
-            XName disp = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ?
-                            XName.Get(CurrentFile.StringTable.Values[property.StringId], "http://schemas.microsoft.com/winfx/2006/xaml") :
-                            CurrentFile.StringTable.Values[property.StringId];
+            XName disp = GetXNameForObject(CurrentFile.StringTable.Values[property.StringId], property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ? "x" : CurrentFile.StringTable.Values[CurrentFile.TypeNamespaceTable.Values[CurrentFile.TypeTable.Values[property.TypeId].NamespaceId].StringId]);
 
             var objects = from x in xp.Values
                           where x is XbfObject
@@ -62,9 +61,16 @@ namespace LibXbf.Output
 
             if (objects.Count() > 0)
             {
-                XElement xe = new XElement(disp);
-                xe.Add(objects);
-                return xe;
+                if(disp.LocalName == "implicititems")
+                {
+                    return objects.ToArray();
+                }
+                else
+                {
+                    XElement xe = new XElement(disp);
+                    xe.Add(objects);
+                    return new XObject[] { xe };
+                }
             }
             else
             {
@@ -79,7 +85,7 @@ namespace LibXbf.Output
                 {
                     xa.SetValue(DumpXbfValueToXml(xVal as XbfValue));
                 }
-                return xa;
+                return new XObject[] { xa };
             }
         }
 
@@ -93,6 +99,26 @@ namespace LibXbf.Output
         private string DumpXbfValueToXml(XbfValue xv)
         {
             return xv.Value;
+        }
+
+        private XName GetXNameForObject(string type, string typeNamespace)
+        {
+            // filter out any invalid characters
+            string dispType = Regex.Replace(type, @"[^\p{L}\p{N}]+", "");
+
+            switch (typeNamespace)
+            {
+                case "Windows.UI.Xaml":
+                case "Windows.UI.Xaml.Internal":
+                case "Windows.UI.Xaml.Controls":
+                case "Windows.UI.Xaml.Automation":
+                case "Windows.UI.Xaml.Media.Animation":
+                    return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+                case "x":
+                    return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml");
+                default:
+                    return XName.Get(dispType, string.Format("using:{0}", typeNamespace));
+            }
         }
     }
 }
