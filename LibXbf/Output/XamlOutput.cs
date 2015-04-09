@@ -7,19 +7,22 @@ using System.Xml.Linq;
 
 namespace LibXbf.Output
 {
-    public class XamlOutput : IXbfOutput<XElement>
+    public class XamlOutput : IXbfOutput<XDocument>
     {
         public XbfFile CurrentFile { get; private set; }
+        private List<string> declaredNamespaces { get; set; }
 
-        public XElement GetOutput(XbfFile file)
+        public XDocument GetOutput(XbfFile file)
         {
             CurrentFile = file;
+            declaredNamespaces = new List<string>();
 
             List<XAttribute> nsDeclarations = new List<XAttribute>();
-            foreach(var ns in CurrentFile.Namespaces)
+            foreach (var ns in CurrentFile.Namespaces)
             {
                 var xns = CurrentFile.StringTable.Values[CurrentFile.XmlNamespaceTable.Values[ns.Id]];
                 nsDeclarations.Add(new XAttribute(string.IsNullOrEmpty(ns.Namespace) ? "xmlns" : XNamespace.Xmlns + ns.Namespace, xns));
+                declaredNamespaces.Add(xns);
             }
 
             var rootObj = CurrentFile.TypeTable.Values[CurrentFile.RootNode.Id];
@@ -31,8 +34,9 @@ namespace LibXbf.Output
                              where x is XbfProperty
                              select DumpXbfPropertyToXml(x as XbfProperty);
             rootElement.Add(properties);
+            var rootDoc = new XDocument(rootElement);
 
-            return rootElement;
+            return rootDoc;
         }
 
         private XElement DumpXbfObjectToXml(XbfObject xo)
@@ -61,7 +65,7 @@ namespace LibXbf.Output
 
             if (objects.Count() > 0)
             {
-                if(disp.LocalName == "implicititems")
+                if (disp.LocalName == "implicititems")
                 {
                     return objects.ToArray();
                 }

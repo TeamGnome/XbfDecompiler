@@ -5,6 +5,7 @@ using LibXbf.Records.Types;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace XbfDecompiler
@@ -57,7 +59,28 @@ namespace XbfDecompiler
 
                 XamlOutput xo = new XamlOutput();
                 var output = xo.GetOutput(currentFile);
-                xbfXml.Text = output.ToString();
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    // need these extra settings to clean up the splurge of namespaces
+                    using (XmlWriter xw = XmlWriter.Create(ms, new XmlWriterSettings() {
+                        OmitXmlDeclaration = true,
+                        NamespaceHandling = NamespaceHandling.OmitDuplicates,
+                        Indent = true,
+                        NewLineHandling = NewLineHandling.Entitize,
+                        Encoding = Encoding.UTF8
+                    }))
+                    {
+                        output.WriteTo(xw);
+                    }
+
+                    // reset to start for reader
+                    ms.Position = 0;
+
+                    using (TextReader tr = new StreamReader(ms))
+                    {
+                        xbfXml.Text = tr.ReadToEnd();
+                    }
+                }
             }
         }
 
