@@ -30,12 +30,6 @@ namespace XbfDecompiler
     {
         private XbfFile currentFile { get; set; }
 
-        public class XbfTreeItem
-        {
-            public string Display { get; set; }
-            public IEnumerable<XbfTreeItem> Children { get; set; }
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -53,16 +47,17 @@ namespace XbfDecompiler
             {
                 currentFile = new XbfFile(ofd.FileName);
 
-                List<XbfTreeItem> source = new List<XbfTreeItem>();
-                source.Add(DumpXbfObject(currentFile.RootNode));
-                xbfTree.ItemsSource = source;
+                TreeOutput to = new TreeOutput();
+                var treeout = to.GetOutput(currentFile);
+                xbfTree.ItemsSource = new[] { treeout };
 
                 XamlOutput xo = new XamlOutput();
                 var output = xo.GetOutput(currentFile);
                 using (MemoryStream ms = new MemoryStream())
                 {
                     // need these extra settings to clean up the splurge of namespaces
-                    using (XmlWriter xw = XmlWriter.Create(ms, new XmlWriterSettings() {
+                    using (XmlWriter xw = XmlWriter.Create(ms, new XmlWriterSettings()
+                    {
                         OmitXmlDeclaration = true,
                         NamespaceHandling = NamespaceHandling.OmitDuplicates,
                         Indent = true,
@@ -81,74 +76,6 @@ namespace XbfDecompiler
                         xbfXml.Text = tr.ReadToEnd();
                     }
                 }
-            }
-        }
-
-        private XbfTreeItem DumpXbfObject(XbfObject xo)
-        {
-            var obj = currentFile.TypeTable.Values[xo.Id];
-            string disp = currentFile.StringTable.Values[obj.StringId];
-
-            return new XbfTreeItem()
-            {
-                Display = disp,
-                Children = from prop in xo.Properties
-                           select DumpXbfProperty(prop)
-            };
-        }
-
-        private XbfTreeItem DumpXbfProperty(XbfProperty xp)
-        {
-            var property = currentFile.PropertyTable.Values[xp.Id];
-            string disp = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ?
-                            string.Format("x:{0}", currentFile.StringTable.Values[property.StringId]) :
-                            currentFile.StringTable.Values[property.StringId];
-
-            return new XbfTreeItem()
-            {
-                Display = disp,
-                Children = from node in xp.Values
-                           select DumpXbfNode(node)
-            };
-        }
-
-        private XbfTreeItem DumpXbfText(XbfText xt)
-        {
-            string disp = currentFile.StringTable.Values[xt.Id];
-
-            return new XbfTreeItem()
-            {
-                Display = disp,
-                Children = null
-            };
-        }
-
-        private XbfTreeItem DumpXbfValue(XbfValue xv)
-        {
-            return new XbfTreeItem()
-            {
-                Display = string.Format("{0}: {1}", xv.Type, xv.Value),
-                Children = null
-            };
-        }
-
-        private XbfTreeItem DumpXbfNode(XbfNode xn)
-        {
-            if (xn is XbfObject)
-            {
-                return DumpXbfObject(xn as XbfObject);
-            }
-            else if (xn is XbfValue)
-            {
-                return DumpXbfValue(xn as XbfValue);
-            }
-            else if (xn is XbfText)
-            {
-                return DumpXbfText(xn as XbfText);
-            }
-            else
-            {
-                return null;
             }
         }
     }

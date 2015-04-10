@@ -110,18 +110,17 @@ namespace LibXbf.Output
             // filter out any invalid characters
             string dispType = Regex.Replace(type, @"[^\p{L}\p{N}]+", "");
 
-            switch (typeNamespace)
+            if(typeNamespace.StartsWith("Windows.UI.Xaml"))
             {
-                case "Windows.UI.Xaml":
-                case "Windows.UI.Xaml.Internal":
-                case "Windows.UI.Xaml.Controls":
-                case "Windows.UI.Xaml.Automation":
-                case "Windows.UI.Xaml.Media.Animation":
-                    return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
-                case "x":
-                    return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml");
-                default:
-                    return XName.Get(dispType, string.Format("using:{0}", typeNamespace));
+                return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
+            }
+            else if(typeNamespace == "x")
+            {
+                return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml");
+            }
+            else
+            {
+                return XName.Get(dispType, string.Format("using:{0}", typeNamespace));
             }
         }
     }
