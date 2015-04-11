@@ -78,7 +78,8 @@ namespace LibXbf.Output
             }
             else
             {
-                XAttribute xa = new XAttribute(disp, "");
+                // technically wrong, and may cause issues in the future, but fuck Microsoft's need to declare namespaces over and over and over and over and over and over and over and over. and over.
+                XAttribute xa = new XAttribute(XName.Get(disp.LocalName), "");
                 var xText = xp.Values.FirstOrDefault(x => x is XbfText);
                 if (xText != null)
                 {

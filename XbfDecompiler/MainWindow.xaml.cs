@@ -1,23 +1,9 @@
 ﻿using LibXbf;
 using LibXbf.Output;
-using LibXbf.Records.Nodes;
-using LibXbf.Records.Types;
 using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -53,29 +39,7 @@ namespace XbfDecompiler
 
                 XamlOutput xo = new XamlOutput();
                 var output = xo.GetOutput(currentFile);
-                using (MemoryStream ms = new MemoryStream())
-                {
-                    // need these extra settings to clean up the splurge of namespaces
-                    using (XmlWriter xw = XmlWriter.Create(ms, new XmlWriterSettings()
-                    {
-                        OmitXmlDeclaration = true,
-                        NamespaceHandling = NamespaceHandling.OmitDuplicates,
-                        Indent = true,
-                        NewLineHandling = NewLineHandling.Entitize,
-                        Encoding = Encoding.UTF8
-                    }))
-                    {
-                        output.WriteTo(xw);
-                    }
-
-                    // reset to start for reader
-                    ms.Position = 0;
-
-                    using (TextReader tr = new StreamReader(ms))
-                    {
-                        xbfXml.Text = tr.ReadToEnd();
-                    }
-                }
+                xbfXml.Text = output.ToString(SaveOptions.OmitDuplicateNamespaces);
             }
         }
     }
