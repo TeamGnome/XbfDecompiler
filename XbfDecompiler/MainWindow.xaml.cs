@@ -31,7 +31,15 @@ namespace XbfDecompiler
             bool? result = ofd.ShowDialog();
             if (result.HasValue && result.Value)
             {
-                currentFile = new XbfFile(ofd.FileName);
+                try
+                {
+                    currentFile = new XbfFile(ofd.FileName);
+                }
+                catch(InvalidXbfException)
+                {
+                    MessageBox.Show("The file selected was not a valid XBF file", "Invalid file", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    return;
+                }
 
                 TreeOutput to = new TreeOutput();
                 var treeout = to.GetOutput(currentFile);

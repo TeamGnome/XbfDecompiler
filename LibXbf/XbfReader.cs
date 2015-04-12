@@ -10,6 +10,8 @@ namespace LibXbf
 {
     public class XbfFile
     {
+        private static readonly byte[] fileMagic = new byte[] { 0x58, 0x42, 0x46, 0x00 };
+
         public Version FileVersion { get; set; }
         public XbfHeader Header { get; set; }
         public XbfTable<string, XbfString> StringTable { get; set; }
@@ -31,6 +33,12 @@ namespace LibXbf
             {
                 // read the file header
                 Header = new XbfHeader(br);
+
+                if(!verifyMagic())
+                {
+                    throw new InvalidXbfException();
+                }
+
                 FileVersion = new Version((int)Header.MajorFileVersion, (int)Header.MinorFileVersion);
 
                 //read in the tables
@@ -42,11 +50,23 @@ namespace LibXbf
                 XmlNamespaceTable = new XbfTable<uint, XbfUInt32>(br, FileVersion);
 
                 // read in the nodes
-                ReadNodes(br);
+                readNodes(br);
             }
         }
 
-        private void ReadNodes(BinaryReader br)
+        private bool verifyMagic()
+        {
+            bool ret = true;
+
+            for(int i = 0; i < fileMagic.Length; i++)
+            {
+                ret &= (fileMagic[i] == Header.MagicNumber[i]);
+            }
+
+            return ret;
+        }
+
+        private void readNodes(BinaryReader br)
         {
             Stack<XbfObject> objectStack = new Stack<XbfObject>();
             Stack<XbfProperty> propertyStack = new Stack<XbfProperty>();

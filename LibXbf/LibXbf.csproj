@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InvalidXbfException.cs" />
     <Compile Include="Output\IXbfOutput.cs" />
     <Compile Include="Output\TreeOutput.cs" />
     <Compile Include="Output\XamlOutput.cs" />
