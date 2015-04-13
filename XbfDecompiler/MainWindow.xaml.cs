@@ -1,6 +1,7 @@
 ﻿using LibXbf;
 using LibXbf.Output;
 using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Text;
 using System.Windows;
@@ -40,6 +41,13 @@ namespace XbfDecompiler
                     MessageBox.Show("The file selected was not a valid XBF file", "Invalid file", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                     return;
                 }
+#if !DEBUG
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Generic ERROR", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                    return;
+                }
+#endif
 
                 TreeOutput to = new TreeOutput();
                 var treeout = to.GetOutput(currentFile);
