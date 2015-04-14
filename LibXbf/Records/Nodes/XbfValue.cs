@@ -57,10 +57,10 @@ namespace LibXbf.Records.Nodes
                                 value = "Auto";
                                 break;
                             case 1:
-                                value = string.Format("Pixel,{0}", lengthValue);
+                                value = string.Format("{0}px", lengthValue);
                                 break;
                             case 2:
-                                value = string.Format("Star,{0}", lengthValue);
+                                value = lengthValue == 1 ? "*" : string.Format("{0}*", lengthValue);
                                 break;
                         }
                         break;

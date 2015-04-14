@@ -36,7 +36,7 @@ namespace XbfDecompiler
                 {
                     currentFile = new XbfFile(ofd.FileName);
                 }
-                catch(InvalidXbfException)
+                catch (InvalidXbfException)
                 {
                     MessageBox.Show("The file selected was not a valid XBF file", "Invalid file", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
                     return;

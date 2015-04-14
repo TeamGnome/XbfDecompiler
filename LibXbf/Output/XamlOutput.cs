@@ -57,7 +57,8 @@ namespace LibXbf.Output
         private XObject[] DumpXbfPropertyToXml(XbfProperty xp)
         {
             var property = CurrentFile.PropertyTable.Values[xp.Id];
-            XName disp = GetXNameForObject(CurrentFile.StringTable.Values[property.StringId], property.Flags.HasFlag(PropertyFlags.IsMarkupDirective) ? "x" : CurrentFile.StringTable.Values[CurrentFile.TypeNamespaceTable.Values[CurrentFile.TypeTable.Values[property.TypeId].NamespaceId].StringId]);
+            var isMarkupProperty = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective);
+            XName disp = GetXNameForObject(CurrentFile.StringTable.Values[property.StringId], isMarkupProperty ? "x" : CurrentFile.StringTable.Values[CurrentFile.TypeNamespaceTable.Values[CurrentFile.TypeTable.Values[property.TypeId].NamespaceId].StringId]);
 
             var objects = from x in xp.Values
                           where x is XbfObject
@@ -78,8 +79,9 @@ namespace LibXbf.Output
             }
             else
             {
+                var properName = XName.Get(disp.LocalName);
                 // technically wrong, and may cause issues in the future, but fuck Microsoft's need to declare namespaces over and over and over and over and over and over and over and over. and over.
-                XAttribute xa = new XAttribute(XName.Get(disp.LocalName), "");
+                XAttribute xa = new XAttribute(properName.LocalName, isMarkupProperty ? properName.NamespaceName : "");
                 var xText = xp.Values.FirstOrDefault(x => x is XbfText);
                 if (xText != null)
                 {
