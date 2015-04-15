@@ -54,7 +54,7 @@ namespace LibXbf.Output
             return xe;
         }
 
-        private XObject[] DumpXbfPropertyToXml(XbfProperty xp)
+        private object[] DumpXbfPropertyToXml(XbfProperty xp)
         {
             var property = CurrentFile.PropertyTable.Values[xp.Id];
             var isMarkupProperty = property.Flags.HasFlag(PropertyFlags.IsMarkupDirective);
@@ -77,11 +77,16 @@ namespace LibXbf.Output
                     return new XObject[] { xe };
                 }
             }
+            else if(disp.LocalName == "implicitinitialization")
+            {
+                var xText = xp.Values.FirstOrDefault(x => x is XbfText);
+
+                return new object[] { DumpXbfTextToXml(xText as XbfText) };
+            }
             else
             {
-                var properName = XName.Get(disp.LocalName);
                 // technically wrong, and may cause issues in the future, but fuck Microsoft's need to declare namespaces over and over and over and over and over and over and over and over. and over.
-                XAttribute xa = new XAttribute(properName.LocalName, isMarkupProperty ? properName.NamespaceName : "");
+                XAttribute xa = new XAttribute(XName.Get(disp.LocalName, isMarkupProperty ? disp.NamespaceName : ""), "");
                 var xText = xp.Values.FirstOrDefault(x => x is XbfText);
                 if (xText != null)
                 {
@@ -98,9 +103,7 @@ namespace LibXbf.Output
 
         private string DumpXbfTextToXml(XbfText xt)
         {
-            string disp = CurrentFile.StringTable.Values[xt.Id];
-
-            return disp;
+            return CurrentFile.StringTable.Values[xt.Id];
         }
 
         private string DumpXbfValueToXml(XbfValue xv)
@@ -117,7 +120,7 @@ namespace LibXbf.Output
             {
                 return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
             }
-            else if(typeNamespace == "x")
+            else if(typeNamespace == "x" || typeNamespace == "Windows.Foundation")
             {
                 return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml");
             }
