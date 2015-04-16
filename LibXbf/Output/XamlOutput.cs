@@ -116,7 +116,7 @@ namespace LibXbf.Output
             // filter out any invalid characters
             string dispType = Regex.Replace(type, @"[^\p{L}\p{N}]+", "");
 
-            if(typeNamespace.StartsWith("Windows.UI.Xaml"))
+            if(typeNamespace.StartsWith("Windows.UI"))
             {
                 return XName.Get(dispType, "http://schemas.microsoft.com/winfx/2006/xaml/presentation");
             }
