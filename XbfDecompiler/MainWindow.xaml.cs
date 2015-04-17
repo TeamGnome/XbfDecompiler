@@ -51,8 +51,11 @@ namespace XbfDecompiler
                     #if !DEBUG
                     catch(Exception ex)
                     {
-                        MessageBox.Show(ex.Message, "Generic ERROR", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
-                        return;
+                        Dispatcher.Invoke(() =>
+                        {
+                            MessageBox.Show(ex.Message, "Generic ERROR", MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK);
+                            return;
+                        });
                     }
                     #endif
 
